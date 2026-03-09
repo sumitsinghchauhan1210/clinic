@@ -1,6 +1,6 @@
 {
-  "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
+    "target": "ES2022",
     "outDir": "./dist",
     "baseUrl": "./",
     "module": "CommonJS",

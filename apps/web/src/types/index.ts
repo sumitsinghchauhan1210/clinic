@@ -69,5 +69,6 @@ export interface CreatePatientDto {
 export interface CreateVisitDto {
   clinicianId: number;
   patientId: number;
+  dateTime?: string;
   notes?: string;
 }

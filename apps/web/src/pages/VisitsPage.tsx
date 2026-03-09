@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Select, Input, message } from 'antd';
+import { Button, Table, Modal, Form, Select, Input, DatePicker, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import { api } from '../api/client';
 import type { Visit, Clinician, Patient, CreateVisitDto } from '../types';
 
@@ -16,7 +17,7 @@ export default function VisitsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filterClinicianId, setFilterClinicianId] = useState<number | undefined>();
   const [filterPatientId, setFilterPatientId] = useState<number | undefined>();
-  const [form] = Form.useForm<CreateVisitDto>();
+  const [form] = Form.useForm();
 
   const loadVisits = async () => {
     setLoading(true);
@@ -57,10 +58,18 @@ export default function VisitsPage() {
     loadOptions();
   }, []);
 
-  const onFinish = async (values: CreateVisitDto) => {
+  const onFinish = async (values: Record<string, unknown>) => {
     setSubmitting(true);
     try {
-      await api.createVisit(values);
+      const payload: CreateVisitDto = {
+        clinicianId: values.clinicianId as number,
+        patientId: values.patientId as number,
+        notes: values.notes as string | undefined,
+      };
+      if (values.dateTime) {
+        payload.dateTime = (values.dateTime as dayjs.Dayjs).toISOString();
+      }
+      await api.createVisit(payload);
       message.success('Visit created');
       setModalOpen(false);
       form.resetFields();
@@ -171,6 +180,19 @@ export default function VisitsPage() {
                 label: `${p.firstName} ${p.lastName || ''}`.trim() || p.email,
                 value: p.id,
               }))}
+            />
+          </Form.Item>
+          <Form.Item
+            name="dateTime"
+            label="Date & Time"
+            extra="Leave empty to use the current time"
+          >
+            <DatePicker
+              showTime
+              format="YYYY-MM-DD HH:mm"
+              style={{ width: '100%' }}
+              placeholder="Select date and time (optional)"
+              minDate={dayjs()}
             />
           </Form.Item>
           <Form.Item name="notes" label="Notes">

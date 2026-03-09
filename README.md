@@ -1,159 +1,169 @@
-# Turborepo starter
+# Clinic – Turborepo Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+A monorepo containing a **Clinic** backend API and a React web app for managing clinicians, patients, and visits.
 
-## Using this example
+## Prerequisites
 
-Run the following command:
+- **Node.js** ≥ 18 (see `engines` in root `package.json`)
+- **npm** (v10+ recommended; project uses `packageManager: "npm@10.9.3"`)
+- (Optional) **Git** for version control
 
-```sh
-npx create-turbo@latest
+## What’s inside
+
+| Path            | Description |
+|-----------------|-------------|
+| `apps/api`      | **NestJS** REST API – clinicians, patients, visits (CRUD), pagination, validation, global exception filter. Uses **Prisma** with SQLite (default). |
+| `apps/web`      | **React** (Vite) + **Ant Design** – clinic UI: sidebar, list/add clinicians, patients, visits; filters and pagination. |
+| `packages/ui`   | Shared React UI components. |
+| `packages/eslint-config` | Shared ESLint configs. |
+| `packages/typescript-config` | Shared `tsconfig` presets. |
+
+## Quick start
+
+### 1. Clone and install
+
+```bash
+git clone <repo-url>
+cd clinic
+npm install
 ```
 
-## What's inside?
+### 2. API – database and env
 
-This Turborepo includes the following packages/apps:
+The API uses **Prisma** with **SQLite** by default.
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```bash
+cd apps/api
+cp .env.example .env   # if present; otherwise create .env
 ```
 
-Without global `turbo`, use your package manager:
+In `apps/api/.env` set (example for SQLite):
 
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```env
+DATABASE_URL="file:./dev.db"
+PORT=3001
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Generate the Prisma client, run migrations, and (optional) seed:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+```bash
+cd apps/api
+npx prisma generate
+npx prisma migrate dev
+npm run db:seed
 ```
 
-Without global `turbo`:
+### 3. Run everything
 
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+From the **repo root**:
+
+```bash
+npm run dev
 ```
 
-### Develop
+This starts both apps (Turbo runs `dev` in each workspace). Then:
 
-To develop all apps and packages, run the following command:
+- **API:** http://localhost:3001  
+- **Web:** http://localhost:5173 (or the port Vite prints)
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+To run only one app:
 
-```sh
-cd my-turborepo
-turbo dev
+```bash
+npm run dev -- --filter=api
+npm run dev -- --filter=web
 ```
 
-Without global `turbo`, use your package manager:
+Or from the app directory:
 
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+cd apps/api && npm run dev
+cd apps/web && npm run dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### 4. Web app → API
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+The web app calls the API at `http://localhost:3001` by default. To override (e.g. production), set in `apps/web`:
 
-```sh
-turbo dev --filter=web
+```env
+VITE_API_URL=http://your-api-host:3001
 ```
 
-Without global `turbo`:
+## Root scripts (from repo root)
 
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+| Script           | Command | Description |
+|------------------|--------|-------------|
+| **Install**      | `npm install` | Install all workspace dependencies. |
+| **Build**        | `npm run build` | Build all apps and packages (Turbo). |
+| **Dev**          | `npm run dev` | Run all apps in dev mode. |
+| **Lint**         | `npm run lint` | Lint all workspaces. |
+| **Format**       | `npm run format` | Format code with Prettier (writes). |
+| **Format check** | `npm run format:check` | Check formatting only (CI). |
+| **Type check**   | `npm run check-types` | TypeScript check across workspaces. |
+
+## API app (`apps/api`)
+
+- **Stack:** NestJS, Prisma, SQLite (or PostgreSQL via adapter), class-validator, global exception filter.
+- **Endpoints:**
+  - `GET/POST /clinicians` (paginated), `GET/PATCH/DELETE /clinicians/:id`
+  - `GET/POST /patients` (paginated), `GET /patients/:id`
+  - `GET/POST /visits` (paginated, filter by clinician/patient, search), list newest first.
+
+**Scripts:**
+
+```bash
+cd apps/api
+npm run dev          # Nest dev with watch
+npm run build        # Nest build
+npm run start        # Nest start (production)
+npm run db:seed      # Seed DB (clinicians, patients, visits)
+npx prisma migrate dev   # Create/apply migrations
+npx prisma generate      # Regenerate Prisma client
+npm run lint
+npm run test
 ```
 
-### Remote Caching
+**Env:** `DATABASE_URL` (required), optional `PORT` (default 3001).
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Web app (`apps/web`)
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+- **Stack:** React 19, Vite, Ant Design, React Router.
+- **Features:** Sidebar (Clinicians / Visits / Patients), tables with pagination, “Add” modals, visit filters by clinician/patient.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+**Scripts:**
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+```bash
+cd apps/web
+npm run dev      # Vite dev server
+npm run build    # Production build
+npm run preview  # Preview production build
+npm run lint
 ```
 
-Without global `turbo`, use your package manager:
+**Env:** Optional `VITE_API_URL` (default `http://localhost:3001`).
 
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+## Database (Prisma)
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+- **Location:** `apps/api/prisma/` (schema, migrations, seed).
+- **Default:** SQLite (`file:./dev.db` in `apps/api`).
+- **Migrations:** Always run from `apps/api`:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+  ```bash
+  cd apps/api
+  npx prisma migrate dev --name your_migration_name
+  ```
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+- **Seed:** `npm run db:seed` in `apps/api` (creates sample clinicians, patients, visits).
 
-```sh
-turbo link
-```
+## Code style
 
-Without global `turbo`:
+- **Prettier** is configured at the repo root (`.prettierrc`, `.prettierignore`).
+- Run `npm run format` from the root to format the whole repo.
+- Run `npm run format:check` to only check (e.g. in CI).
 
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+## Useful links
 
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- [Turborepo docs](https://turborepo.dev/docs)
+- [NestJS](https://nestjs.com/)
+- [Prisma](https://www.prisma.io/docs)
+- [Vite](https://vite.dev/)
+- [Ant Design](https://ant.design/)
