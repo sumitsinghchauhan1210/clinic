@@ -1,11 +1,4 @@
-import {
-  IsInt,
-  IsOptional,
-  IsString,
-  MaxLength,
-  Min,
-  IsDateString,
-} from 'class-validator';
+import { IsInt, IsOptional, IsString, MaxLength, Min, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateVisitDto {

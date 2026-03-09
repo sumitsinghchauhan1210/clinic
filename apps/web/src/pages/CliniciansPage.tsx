@@ -105,7 +105,27 @@ export default function CliniciansPage() {
           <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
             <Input placeholder="jane@clinic.com" />
           </Form.Item>
-          <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
+          <Form.Item
+            name="phone"
+            label="Phone"
+            rules={[
+              { required: true, message: 'Phone is required' },
+              {
+                pattern: /^\+?[\d\s\-().]{7,20}$/,
+                message: 'Enter a valid phone number (e.g. +1-555-123-4567)',
+              },
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+                  const digitCount = value.replace(/\D/g, '').length;
+                  if (digitCount < 7 || digitCount > 15) {
+                    return Promise.reject('Phone must have 7–15 digits');
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
             <Input placeholder="+1-555-123-4567" />
           </Form.Item>
           <Form.Item name="specialty" label="Specialty">

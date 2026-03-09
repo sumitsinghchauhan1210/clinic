@@ -45,12 +45,4 @@ export class PatientsService {
     };
     return this.prisma.patient.create({ data });
   }
-
-  async getPatient(id: number): Promise<Patient> {
-    const patient = await this.prisma.patient.findUnique({ where: { id } });
-    if (!patient) {
-      throw new NotFoundException('Patient not found');
-    }
-    return patient;
-  }
 }

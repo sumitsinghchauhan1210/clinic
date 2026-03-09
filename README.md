@@ -10,13 +10,10 @@ A monorepo containing a **Clinic** backend API and a React web app for managing 
 
 ## What’s inside
 
-| Path            | Description |
-|-----------------|-------------|
-| `apps/api`      | **NestJS** REST API – clinicians, patients, visits (CRUD), pagination, validation, global exception filter. Uses **Prisma** with SQLite (default). |
-| `apps/web`      | **React** (Vite) + **Ant Design** – clinic UI: sidebar, list/add clinicians, patients, visits; filters and pagination. |
-| `packages/ui`   | Shared React UI components. |
-| `packages/eslint-config` | Shared ESLint configs. |
-| `packages/typescript-config` | Shared `tsconfig` presets. |
+| Path       | Description                                                                                                                                        |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/api` | **NestJS** REST API – clinicians, patients, visits (CRUD), pagination, validation, global exception filter. Uses **Prisma** with SQLite (default). |
+| `apps/web` | **React** (Vite) + **Ant Design** – clinic UI: sidebar, list/add clinicians, patients, visits; filters and pagination.                             |
 
 ## Quick start
 
@@ -34,7 +31,7 @@ The API uses **Prisma** with **SQLite** by default.
 
 ```bash
 cd apps/api
-cp .env.example .env   # if present; otherwise create .env
+touch .env
 ```
 
 In `apps/api/.env` set (example for SQLite):
@@ -49,7 +46,7 @@ Generate the Prisma client, run migrations, and (optional) seed:
 ```bash
 cd apps/api
 npx prisma generate
-npx prisma migrate dev
+npx prisma migrate dev --name init
 npm run db:seed
 ```
 
@@ -63,8 +60,8 @@ npm run dev
 
 This starts both apps (Turbo runs `dev` in each workspace). Then:
 
-- **API:** http://localhost:3001  
-- **Web:** http://localhost:5173 (or the port Vite prints)
+- **API:** [http://localhost:3001](http://localhost:3001)
+- **Web:** [http://localhost:5173](http://localhost:5173) (or the port Vite prints)
 
 To run only one app:
 
@@ -90,15 +87,15 @@ VITE_API_URL=http://your-api-host:3001
 
 ## Root scripts (from repo root)
 
-| Script           | Command | Description |
-|------------------|--------|-------------|
-| **Install**      | `npm install` | Install all workspace dependencies. |
-| **Build**        | `npm run build` | Build all apps and packages (Turbo). |
-| **Dev**          | `npm run dev` | Run all apps in dev mode. |
-| **Lint**         | `npm run lint` | Lint all workspaces. |
-| **Format**       | `npm run format` | Format code with Prettier (writes). |
-| **Format check** | `npm run format:check` | Check formatting only (CI). |
-| **Type check**   | `npm run check-types` | TypeScript check across workspaces. |
+| Script           | Command                | Description                          |
+| ---------------- | ---------------------- | ------------------------------------ |
+| **Install**      | `npm install`          | Install all workspace dependencies.  |
+| **Build**        | `npm run build`        | Build all apps and packages (Turbo). |
+| **Dev**          | `npm run dev`          | Run all apps in dev mode.            |
+| **Lint**         | `npm run lint`         | Lint all workspaces.                 |
+| **Format**       | `npm run format`       | Format code with Prettier (writes).  |
+| **Format check** | `npm run format:check` | Check formatting only (CI).          |
+| **Type check**   | `npm run check-types`  | TypeScript check across workspaces.  |
 
 ## API app (`apps/api`)
 
@@ -146,12 +143,10 @@ npm run lint
 - **Location:** `apps/api/prisma/` (schema, migrations, seed).
 - **Default:** SQLite (`file:./dev.db` in `apps/api`).
 - **Migrations:** Always run from `apps/api`:
-
   ```bash
   cd apps/api
   npx prisma migrate dev --name your_migration_name
   ```
-
 - **Seed:** `npm run db:seed` in `apps/api` (creates sample clinicians, patients, visits).
 
 ## Code style

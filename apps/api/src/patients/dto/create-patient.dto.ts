@@ -26,11 +26,10 @@ export class CreatePatientDto {
   email!: string;
 
   @IsString()
-  @MinLength(1, { message: 'phone must not be empty' })
-  @MaxLength(20)
-  @Matches(/^[+\d\s\-()]+$/, {
-    message: 'phone must contain only digits, spaces, +, -, (, )',
+  @Matches(/^\+?(\d[\s\-().]*){7,15}$/, {
+    message: 'phone must be a valid phone number with 7–15 digits (e.g. +1-555-200-3001)',
   })
+  @MaxLength(20)
   phone!: string;
 
   @IsOptional()

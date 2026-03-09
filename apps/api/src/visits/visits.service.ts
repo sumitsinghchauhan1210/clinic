@@ -37,7 +37,7 @@ export class VisitsService {
   private async assertNoConflict(
     clinicianId: number,
     patientId: number,
-    timestamp: Date,
+    timestamp: Date
   ): Promise<void> {
     const windowStart = new Date(timestamp.getTime() - VISIT_DURATION_MS);
     const windowEnd = new Date(timestamp.getTime() + VISIT_DURATION_MS);
@@ -54,13 +54,13 @@ export class VisitsService {
 
     if (clinicianConflict) {
       throw new ConflictException(
-        `Clinician already has a visit at ${clinicianConflict.timestamp.toISOString()}. Each visit blocks a 15-minute window.`,
+        `Clinician already has a visit at ${clinicianConflict.timestamp.toISOString()}. Each visit blocks a 15-minute window.`
       );
     }
 
     if (patientConflict) {
       throw new ConflictException(
-        `Patient already has a visit at ${patientConflict.timestamp.toISOString()}. Each visit blocks a 15-minute window.`,
+        `Patient already has a visit at ${patientConflict.timestamp.toISOString()}. Each visit blocks a 15-minute window.`
       );
     }
   }
