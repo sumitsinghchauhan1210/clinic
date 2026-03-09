@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Clinician {
+  id          Int      @id @default(autoincrement())
+  name        String   
+  email       String   @unique 
+  phone       String   
+  specialty   String   @default("General") 
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  visits      Visit[]
+}
+
+model Patient {
+  id     Int     @id @default(autoincrement())
+  visits Visit[]
+  firstName String
+  lastName String?
+  email String @unique
+  phone String @unique
+  dateOfBirth DateTime @default(now())
+  gender String
+  address String?
+  city String?
+  state String?
+  zip String?   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+
+model Visit {
+  id          Int       @id @default(autoincrement())
+  timestamp   DateTime  @default(now())
+  notes       String?
+  clinicianId Int
+  patientId   Int
+  clinician   Clinician @relation(fields: [clinicianId], references: [id])
+  patient     Patient   @relation(fields: [patientId], references: [id])
+  @@index([timestamp(sort: Desc)], name: "Visit_timestamp_desc_idx")
+  @@index([clinicianId, timestamp(sort: Desc)], name: "Visit_clinicianId_timestamp_idx")
+  @@index([patientId, timestamp(sort: Desc)], name: "Visit_patientId_timestamp_idx")
+}
+
+

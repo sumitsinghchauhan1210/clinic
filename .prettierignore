@@ -1,0 +1,51 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+build
+.next
+out
+.turbo
+*.tsbuildinfo
+
+# Generated / vendored
+apps/api/generated
+apps/api/dist
+*.min.js
+*.min.css
+
+# Lockfiles & package manager
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# SQLite DB (binary)
+*.db
+*.db-journal
+
+# Logs & cache
+*.log
+.cache
+.eslintcache
+
+# Coverage
+coverage
+.nyc_output
+
+# Misc
+.DS_Store
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg
+*.woff
+*.woff2
